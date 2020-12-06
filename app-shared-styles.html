@@ -1,0 +1,246 @@
+
+<!--
+  *
+  *   To use these across web components, 
+  *   import this file in js and use the 'include' 
+  *   keyword in the html <script> tag
+  *
+  *   .js
+  *     
+  *     import '@longlost/app-shared-styles/app-shared-styles.js';
+  *
+  *
+  *   .html
+  *
+  *     <style include="app-shared-styles">
+  *
+  *       ... element specific css
+  *
+  *     </style>
+  *
+  -->
+
+
+<template>
+  <style>
+
+    /*
+      Yet another Safari fix.
+     
+      Use this when an element with a 
+      border-radius should mask a nested element.
+    */ 
+    .shared-border-radius-mask {
+      overflow:           hidden;      
+      -webkit-mask-image: -webkit-radial-gradient(white, black);
+    }
+
+
+    .shared-bottom-divider {
+      border-bottom: 2px solid var(--divider-color);
+    }
+
+
+    .shared-divider {
+      border-top: 2px solid var(--divider-color);
+    }
+
+
+    .shared-card-shadow {
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                  0 1px 5px 0 rgba(0, 0, 0, 0.12),
+                  0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    }
+
+
+    .shared-card {
+      border-radius: 3px;
+      box-shadow:    0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                     0 1px 5px 0 rgba(0, 0, 0, 0.12),
+                     0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    }
+
+    /* 
+      fake an icon button with this class
+      <paper-button>
+        <custom-icon-element></custom-icon-element>
+      </paper-button>
+    */
+    .shared-custom-icon-paper-button {
+      min-width:     40px;
+      height:        40px;
+      border-radius: 50%;
+      margin:        0px;
+      padding:       8px;
+    }
+
+    
+    .shared-no-select {
+      -webkit-touch-callout: none;
+      -webkit-user-select:   none;
+      -moz-user-select:      none;
+      -ms-user-select:       none;
+      user-select:           none;
+    }
+
+
+    .shared-single-line-truncate {
+      white-space:   nowrap;
+      overflow:      hidden;
+      text-overflow: ellipsis;
+    }
+
+
+    .shared-two-line-truncate {
+      line-height:        1.5;
+      overflow:           hidden;
+      display:            -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+
+    .shared-three-line-truncate {
+      line-height:        1.5;
+      overflow:           hidden;
+      display:            -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    /*
+      properly place an icon to the right of text
+      in a paper-button
+      <paper-button>
+        <iron-icon></iron-icon>
+      </paper-button>
+    */
+    .shared-paper-button-with-icon {
+      line-height: normal;
+    }
+
+
+    .shared-iron-icon-inside-paper-button {
+      margin-right: 4px;
+    }
+
+
+    .shared-paper-card {
+      margin: 16px;
+      background-color:          var(--app-background-color);
+      color:                     var(--dark-text-color);
+      --paper-card-header-color: var(--dark-text-color);
+      --paper-card-content: {
+        padding: 0px 16px 8px 16px;
+      };
+      --paper-card-actions: {
+        display:         flex;
+        justify-content: flex-end;
+        padding:         8px 16px;
+      };
+    }
+
+
+    .shared-paper-checkbox {
+      --paper-checkbox-unchecked-color:     var(--dark-text-color);
+      --paper-checkbox-unchecked-ink-color: var(--dark-text-color);
+      --paper-checkbox-checked-color:       var(--app-primary-color);
+      --paper-checkbox-checked-ink-color:   var(--app-primary-color);
+      --paper-checkbox-label-color:         var(--secondary-text-color);
+    }
+
+
+    .shared-paper-checkbox[checked] {
+      font-weight:                  bold;
+      --paper-checkbox-label-color: var(--dark-text-color);
+    }
+
+
+    .shared-paper-dropdown-menu {
+      --paper-dropdown-menu-input: {
+        --paper-input-container-color:       var(--secondary-text-color);
+        --paper-input-container-input-color: var(--dark-text-color);
+        --paper-input-container-focus-color: var(--app-primary-color);
+        /*
+          Must set this here to counteract a bug 
+          in paper-input and paper-textarea.
+
+          This value is set in notes-textarea in 
+          order to match the styles of a paper-input
+          with a prefix iron-icon.
+
+          When this is only set on the note-textarea's
+          paper-textarea, it interferes with the styles 
+          of these paper-inputs.
+        */
+        --paper-input-container-label-floating: {
+          left: 0px;
+        };
+      };
+    }
+
+
+    .shared-paper-input {
+      --paper-input-container-color:       var(--secondary-text-color);
+      --paper-input-container-input-color: var(--dark-text-color);
+      --paper-input-container-focus-color: var(--app-primary-color);
+      /*
+        Must set this here to counteract a bug 
+        in paper-input and paper-textarea.
+
+        This value is set in notes-textarea in 
+        order to match the styles of a paper-input
+        with a prefix iron-icon.
+
+        When this is only set on the note-textarea's
+        paper-textarea, it interferes with the styles 
+        of these paper-inputs.
+      */
+      --paper-input-container-label-floating: {
+        left: 0px;
+      };
+    }
+
+
+    .shared-paper-input iron-icon {
+      margin-right: 4px;
+    }
+
+
+    .shared-paper-listbox {
+      --paper-listbox-background-color: var(--app-background-color);
+      --paper-listbox-color:            var(--dark-text-color);
+    }
+
+
+    .shared-paper-radio-button {
+      --paper-radio-group-item-padding:         0px;
+      --paper-radio-button-checked-color:       var(--app-primary-color);
+      --paper-radio-button-checked-ink-color:   var(--app-primary-color);
+      --paper-radio-button-unchecked-color:     var(--dark-text-color);
+      --paper-radio-button-unchecked-ink-color: var(--dark-text-color);
+      --paper-radio-button-label-color:         var(--dark-text-color);
+    }
+
+
+    .shared-paper-slider {
+      --paper-slider-active-color:    var(--app-primary-color);
+      --paper-slider-secondary-color: var(--app-accent-color);
+      --paper-slider-knob-color:      var(--app-primary-color);
+      --paper-slider-pin-color:       var(--app-primary-color);
+    }
+
+
+    .shared-paper-toggle-button {
+      --paper-toggle-button-checked-bar-color:    var(--app-primary-color);
+      --paper-toggle-button-checked-button-color: var(--app-primary-color);
+      --paper-toggle-button-checked-ink-color:    var(--app-primary-color);
+    }
+    
+
+    paper-button[pressed] {
+      outline: none;
+    }
+
+  </style>
+</template>
