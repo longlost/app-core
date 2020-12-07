@@ -48,7 +48,15 @@ if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
 
+// This function is provided to 'app-shell/auth/auth.js' as a way
+// to keep the firebase dependency isolated to this one repo,
+// to make it easier to maintain. Otherwise there can be different 
+// versions and it becomes a resolution nightmare.
+const loadFirebaseAuth = () => import(
+	/* webpackChunkName: 'firebase/auth' */ 
+	'firebase/auth'
+);
 
 
 // export {app, firebase, performance};
-export {app, firebase};
+export {app, firebase, loadFirebaseAuth};
