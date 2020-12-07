@@ -105,10 +105,8 @@ const isCloudProcessable = file => {
 };
 
 
-exports = {
-  allProcessingRan,
-	canProcess,
-	canReadExif,
-  canvasToFile,
-	isCloudProcessable
-};
+exports.allProcessingRan   = allProcessingRan;
+exports.canProcess         = canProcess;
+exports.canReadExif        = canReadExif;
+exports.canvasToFile       = canvasToFile;
+exports.isCloudProcessable = isCloudProcessable;

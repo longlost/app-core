@@ -52,10 +52,15 @@ if ('scrollRestoration' in history) {
 // to keep the firebase dependency isolated to this one repo,
 // to make it easier to maintain. Otherwise there can be different 
 // versions and it becomes a resolution nightmare.
-const loadFirebaseAuth = () => import(
-	/* webpackChunkName: 'firebase/auth' */ 
-	'firebase/auth'
-);
+const loadFirebaseAuth = async () => {
+	await import(
+		/* webpackChunkName: 'firebase/auth' */ 
+		'firebase/auth'
+	);
+
+	// Return a 'fresh' version with auth side effects applied.
+	return firebase; 
+};
 
 
 // export {app, firebase, performance};
