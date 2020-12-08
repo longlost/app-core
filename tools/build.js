@@ -109,53 +109,46 @@ const wasmLoader = {
 
 const htmlLoader = {
   test: /\.(html)$/,
-  use: { 
-    loader: 'html-loader',
-    options: {
-      esModule: true
-    }
+  loader: 'html-loader',
+  options: {
+    esModule: true
   }
 };
 
 const workerLoader = {
   test: /worker\.js$/,
-  use: {loader: 'worker-loader'}
+  loader: 'worker-loader'
 };
 
 const cssLoader = {
   test: /\.css$/,
-  use: [
-    'style-loader',
-    'css-loader'
-  ]       
+  loader: 'css-loader',
+  options: {
+    import: false // Resolves an issue with 'firebaseui' css file.
+  }
 };
 
+// Specifically for 'typeface-' self hosted font-family node_modules.
 const fileLoader = {
-
-  // Specifically for 'typeface-' self hosted font-family node_modules.
   test: /\.(woff|woff2|eot|ttf)$/, 
-  use: { 
-    loader: 'file-loader' 
-  }
+  loader: 'file-loader' 
 };
 
 const responsiveLoader = {
   test: /\.(jpe?g|png|webp)$/i,
-  use: {
-    loader: 'responsive-loader',
-    options: {
+  loader: 'responsive-loader',
+  options: {
 
-      // Use Sharp instead of Jimp to allow webp support.
-      adapter:         require(toolsPath('responsive-loader/sharp')),
-      esModule:        true,  // Allow tree shaking.  
-      format:         'webp', // Convert jpeg and png to webp.   
-      name:           '[name]-[width]-[contenthash].[ext]',
-      outputPath:     'responsive/',      
-      placeholder:     true,
-      placeholderSize: 50,
-      quality:         90, // Default is 85.
-      sizes:           [300, 600, 900, 1200, 1500]
-    }
+    // Use Sharp instead of Jimp to allow webp support.
+    adapter:         require(toolsPath('responsive-loader/sharp')),
+    esModule:        true,  // Allow tree shaking.  
+    format:         'webp', // Convert jpeg and png to webp.   
+    name:           '[name]-[width]-[contenthash].[ext]',
+    outputPath:     'responsive/',      
+    placeholder:     true,
+    placeholderSize: 50,
+    quality:         90, // Default is 85.
+    sizes:           [300, 600, 900, 1200, 1500]
   }
 };
 
@@ -165,26 +158,24 @@ const htmlMinifierLoader = {
     '@longlost',
     '@polymer'
   ]),
-  use: {
-    loader: 'babel-loader',
-    options: {
-      plugins: [
-        [toolsPath('babel-plugin-template-html-minifier'), {
-          modules: {
-            '@polymer/lit-element/lit-element.js':    ['html'],
-            '@polymer/polymer/polymer-element.js':    ['html'],
-            '@polymer/polymer/polymer-legacy.js':     ['html'],
-            '@polymer/polymer/lib/utils/html-tag.js': ['html', 'htmlLiteral'],               
-            '@longlost/app-core/app-element.js':      ['html']
-          },
-          htmlMinifier: {
-            collapseWhitespace: true,
-            minifyCSS:          true,
-            removeComments:     true
-          }
-        }]
-      ]
-    }
+  loader: 'babel-loader',
+  options: {
+    plugins: [
+      [toolsPath('babel-plugin-template-html-minifier'), {
+        modules: {
+          '@polymer/lit-element/lit-element.js':    ['html'],
+          '@polymer/polymer/polymer-element.js':    ['html'],
+          '@polymer/polymer/polymer-legacy.js':     ['html'],
+          '@polymer/polymer/lib/utils/html-tag.js': ['html', 'htmlLiteral'],               
+          '@longlost/app-core/app-element.js':      ['html']
+        },
+        htmlMinifier: {
+          collapseWhitespace: true,
+          minifyCSS:          true,
+          removeComments:     true
+        }
+      }]
+    ]
   }
 };
 
@@ -341,7 +332,7 @@ module.exports = {
 
           // Only cache 50 thumbnail images.
           expiration: {
-            maxEntries: 50,
+            maxEntries: 50
           }
         }
       }]

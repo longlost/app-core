@@ -71,49 +71,41 @@ module.exports = {
       },
       {
         test: /\.(html)$/,
-        use: { 
-          loader: 'html-loader',
-          options: {
-            esModule: true
-          }
+        loader: 'html-loader',
+        options: {
+          esModule: true
         }
       },
       {
         test: /worker\.js$/,
-        use: { 
-          loader: 'worker-loader'
-        }
+        loader: 'worker-loader'
       },
       {
         test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader'
-        ]       
-      },
-      {
-        test: /\.(woff|woff2|eot|ttf)$/, // specifically for 'typeface-' self hosted font-family node_modules
-        use: { 
-          loader: 'file-loader' 
+        loader: 'css-loader',
+        options: {
+          import: false // Resolves an issue with 'firebaseui' css file.
         }
       },
       {
+        test: /\.(woff|woff2|eot|ttf)$/, // specifically for 'typeface-' self hosted font-family node_modules
+        loader: 'file-loader'
+      },
+      {
         test: /\.(jpe?g|png|webp)$/i,
-        use: {
-          loader: 'responsive-loader',
-          options: {
+        loader: 'responsive-loader',
+        options: {
 
-            // Use Sharp instead of Jimp to allow webp support.
-            adapter:         require(toolsPath('responsive-loader/sharp')),
-            esModule:        true, // Allow tree shaking.
-            format:         'webp',
-            name:           '[name]-[width]-[contenthash].[ext]',
-            outputPath:     'responsive/', 
-            placeholder:     true,
-            placeholderSize: 50,
-            quality:         90, // Default is 85.
-            sizes:           [300, 600, 900, 1200, 1500]
-          }
+          // Use Sharp instead of Jimp to allow webp support.
+          adapter:         require(toolsPath('responsive-loader/sharp')),
+          esModule:        true, // Allow tree shaking.
+          format:         'webp',
+          name:           '[name]-[width]-[contenthash].[ext]',
+          outputPath:     'responsive/', 
+          placeholder:     true,
+          placeholderSize: 50,
+          quality:         90, // Default is 85.
+          sizes:           [300, 600, 900, 1200, 1500]
         }
       }
     ]
