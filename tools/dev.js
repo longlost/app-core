@@ -146,6 +146,11 @@ module.exports = {
       patterns: [{
         from: path.resolve('src/images'), 
         to:  'images'
+      }, {
+
+        // Shim the created file in the build process that is missing in dev mode.
+        from: path.resolve('src/service-worker.js'), 
+        to:   'service-worker.js'
       }]
     }),
 
