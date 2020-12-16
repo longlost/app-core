@@ -20,9 +20,9 @@
     "@polymer/iron-iconset-svg": "^3.0.1",
     "@polymer/paper-styles": "^3.0.1",
     "@polymer/polymer": "^3.4.1",
-    "@ungap/global-this": "^0.4.2",
+    "@ungap/global-this": "^0.4.3",
     "comlink": "^4.3.0",
-    "firebase": "^8.1.2",
+    "firebase": "^8.2.0",
     "mime-types": "^2.1.27",
     "scroll-behavior-polyfill": "^2.0.13",
     "workbox-window": "^6.0.2"
