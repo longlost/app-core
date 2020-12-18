@@ -39,39 +39,11 @@ const canProcess = file => {
   return type.startsWith('image/') &&
          (
            // These image types are supported by both 
-           // the HTML <img/> tag and ImageMagick.
+           // the HTML <img/> tag and `wasm-imagemagick`.
            type.includes('bmp')  || 
            type.includes('gif')  || 
            type.includes('jpeg') ||
-           type.includes('png')  || 
-           type.includes('webp')
-         );
-};
-
-
-// Accepts a File Object.
-const canReadExif = file => {
-  const {type} = file;
-
-  return type.startsWith('image/') &&
-         (
-           // These image types are supported by both 
-           // the HTML <img/> tag and `exifreader` library.
-           type.includes('jpeg') ||
-
-           // TODO:
-           //
-           //   Switch 'exifreader' library for wasm-imagemagick
-           //   'identify -verbose' command, which includes exif info
-
-
-           // PNG xmp info not available for exifreader, but may
-           // be available to ImageMagick 'identify -verbose'
-           
-           // type.includes('png')  ||
-
-
-           type.includes('webp')
+           type.includes('png')
          );
 };
 
@@ -107,6 +79,5 @@ const isCloudProcessable = file => {
 
 exports.allProcessingRan   = allProcessingRan;
 exports.canProcess         = canProcess;
-exports.canReadExif        = canReadExif;
 exports.canvasToFile       = canvasToFile;
 exports.isCloudProcessable = isCloudProcessable;
