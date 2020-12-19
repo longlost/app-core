@@ -43,24 +43,5 @@
     "webpack-dev-server": "^3.11.0",
     "workbox-webpack-plugin": "^5.1.4",
     "worker-loader": "^3.0.5"
-  },
-  "exifreader": {
-    "include": {
-      "exif": [
-        "DateTimeOriginal",
-        "GPSAltitude",
-        "GPSAltitudeRef",
-        "GPSDateStamp",
-        "GPSImgDirection",
-        "GPSImgDirectionRef",
-        "GPSLatitude",
-        "GPSLatitudeRef",
-        "GPSLongitude",
-        "GPSLongitudeRef",
-        "GPSTimeStamp",
-        "ImageDescription",
-        "Orientation"
-      ]
-    }
   }
 }
