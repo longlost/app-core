@@ -1,25 +1,37 @@
 
 /**
-	*		Cloud functions callable functions interface.
-	*	
-	*
-	**/
+  *   Cloud functions callable functions interface.
+  * 
+  *
+  **/
 
 
-import {firebase} from '../boot/boot.js';
-import 'firebase/functions';
+import firebaseReady from '../firebase.js';
 
 
-const functions = firebase.functions();
+let functions;
+
+const init = async () => {
+
+  const {firebase} = await firebaseReady();
+
+  await import(/* webpackChunkName: 'firebase/functions' */ 'firebase/functions');
+
+  functions = firebase.functions();
+};
 
 // No try catch, forward error out to main thread,
-// so consumer can take steps to properly handle them.
+// so developer can take steps to properly handle them.
 export default async job => {
 
-	const {name, data = {}} = job;
-	const callable = functions.httpsCallable(name);
+  if (!functions) {
+    await init();
+  }
 
-	const result = await callable(data);
+  const {name, data = {}} = job;
+  const callable          = functions.httpsCallable(name);
 
-	return result.data;
+  const result = await callable(data);
+
+  return result.data;
 };

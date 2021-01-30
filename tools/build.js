@@ -252,8 +252,11 @@ module.exports = {
         from: path.resolve('src/robots.txt'), 
         to:   'robots.txt'
       }, {
-        from: path.resolve('src/app-service-worker-import.js'), 
-        to:   'app-service-worker-import.js'
+        from: path.resolve('node_modules/@longlost/app-core/app-service-worker.js'), 
+        to:   'app-service-worker.js'
+      }, {
+        from: path.resolve('src/app-service-worker-custom.js'), 
+        to:   'app-service-worker-custom.js'
       }]
     }),
 
@@ -297,7 +300,10 @@ module.exports = {
       cleanupOutdatedCaches: true,
 
       // Do NOT use path.resolve here.
-      importScripts: ['app-service-worker-import.js'], 
+      importScripts: [
+        'app-service-worker.js', 
+        'app-service-worker-custom.js'
+      ], 
 
       // False because user is prompted to refresh. 
       // That is when we call skipWaiting() in auto

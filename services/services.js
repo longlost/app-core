@@ -45,68 +45,21 @@ import {
 	textStartsWithSearch
 } from './db.js';
 
+import functions from './functions.js';
 
-let functions;
-let storage;
-
-
-const checkFunctions = async () => {
-	if (functions) { return; }
-
-	const {default: fns} = 
-		await import(/* webpackChunkName: 'functions' */ './functions.js');
-
-	functions = fns;
-};
-
-
-const checkStorage = async () => {
-	if (storage) { return; }
-
-	storage = await import(/* webpackChunkName: 'storage' */ './storage.js');
-};
-
-
-const cloudFunction = async (...args) => {
-	await checkFunctions();
-	return functions(...args);
-};
-
-
-const deleteFile = async (...args) => {
-	await checkStorage();
-	return storage.deleteFile(...args);
-};
-
-
-const fileUpload = async (...args) => {
-	await checkStorage();
-	return storage.fileUpload(...args);
-};
-
-
-const getDownloadUrl = async (...args) => {
-	await checkStorage();
-	return storage.getDownloadUrl(...args);
-};
-
-
-const getMetadata = async (...args) => {
-	await checkStorage();
-	return storage.getMetadata(...args);
-};
-
-
-const updateMetadata = async (...args) => {
-	await checkStorage();
-	return storage.updateMetadata(...args);
-};
+import {
+	deleteFile,
+	fileUpload,
+	getDownloadUrl,
+	getMetadata,
+	updateMetadata
+} from './storage.js';
 
 
 // Promises.
 const services = {
 	add,
-	cloudFunction,
+	cloudFunction: functions,
 	deleteDocument,
 	deleteField,
 	deleteFile,
