@@ -1,10 +1,22 @@
 
 
-import {app, firebase}  from '../boot/boot.js';
-import 'firebase/firestore';
+import firebaseReady from '../firebase.js';
 
-    
-const firestore = app.firestore();
+
+let db;
+
+const init = async () => {
+
+	if (db) { return db; }
+
+	const {firebase} = await firebaseReady();
+
+	await import(/* webpackChunkName: 'firebase/firestore' */ 'firebase/firestore');
+
+	db = firebase.firestore();
+
+	return db;
+};
 
 
 // Working with Timestamps:
@@ -34,7 +46,10 @@ const addOrderBy = (ref, orderBy) => {
 };
 
 // 'orderBy' --> {name or prop, direction}
-const buildCompoundRef = ({coll, endAt, limit, orderBy, startAt}, ref) => {
+const buildCompoundRef = async ({coll, endAt, limit, orderBy, startAt}, ref) => {
+
+	const firestore = await init();
+
 	ref = ref || firestore.collection(coll);
 	
 	ref = addOrderBy(ref, orderBy);
@@ -82,13 +97,16 @@ const buildCompoundQuery = (ref, query) => {
 
 // 'subscribe' helper.
 // Ref can be for entire collection or specific doc.
-const getSubscribeRef = (coll, doc, endAt, limit, orderBy, startAt) => {
+const getSubscribeRef = async (coll, doc, endAt, limit, orderBy, startAt) => {
 
 	if (doc && (endAt || limit || orderBy || startAt)) {
 		throw new Error('Cannot apply search options to a single document.');
 	}
 
 	if (doc) {
+
+		const firestore = await init();
+
 		return firestore.collection(coll).doc(doc);
 	}
 
@@ -101,6 +119,7 @@ const getSubscribeRef = (coll, doc, endAt, limit, orderBy, startAt) => {
 //
 // Returns a function that unsubscribes.
 const startSubscription = (ref, cb, onError) => {
+
 	return ref.onSnapshot(snapshot => {
 
 		if (snapshot.exists || ('empty' in snapshot && snapshot.empty === false)) {
@@ -135,7 +154,11 @@ const startSubscription = (ref, cb, onError) => {
 // Each device can have its own state
 // in case user uses app on a shared device.
 const enablePersistence = async () => {
+
 	try {
+
+		const firestore = await init();
+
 		await firestore.enablePersistence({synchronizeTabs: true});		
 	}
 	catch (error) {
@@ -168,12 +191,17 @@ const enablePersistence = async () => {
 //
 // Note: no multi-dimentional arrays can be stored.
 //
-const add = ({coll, data}) => {
+const add = async ({coll, data}) => {
+
+	const firestore = await init();
+
 	return firestore.collection(coll).add(data);
 };
 
 // Must include 'coll', 'doc' and 'data'.
-const set = ({coll, doc, data, merge = true}) => {
+const set = async ({coll, doc, data, merge = true}) => {
+
+	const firestore = await init();
 
 	// 'set' with merge true create a document if one does not already exist
 	// and will only overwrite specified fields that are passed in.
@@ -181,7 +209,9 @@ const set = ({coll, doc, data, merge = true}) => {
 };
 
 // Must include a collection of {coll, doc, data} items.
-const saveItems = items => {
+const saveItems = async items => {
+
+	const firestore = await init();
 
 	const batch = firestore.batch();
 
@@ -205,7 +235,9 @@ const saveItems = items => {
 //
 // Must include 'coll' and 'doc'.
 const get = async ({coll, doc}) => {
-	const docData = await firestore.collection(coll).doc(doc).get();
+
+	const firestore = await init();
+	const docData 	= await firestore.collection(coll).doc(doc).get();
 
   if (docData.exists) {
     return docData.data();
@@ -225,7 +257,7 @@ const get = async ({coll, doc}) => {
 //
 // 'orderBy' --> {name, direction}
 const getAll = async job => {
-	const ref = buildCompoundRef(job);
+	const ref = await buildCompoundRef(job);
 
 	const snapshot = await ref.get();
 
@@ -247,10 +279,14 @@ const getAll = async job => {
 // 'query' is either an Object --> {comparator, field, operator} or 
 // Array --> [{comparator, field, operator}].
 const query = async job => {
+
+	const firestore = await init();
+
 	let ref = firestore.collection(job.coll);
 
 	ref = buildCompoundQuery(ref, job.query);
-	ref = buildCompoundRef(job, ref);
+
+	ref = await buildCompoundRef(job, ref);
 
 	const snapshot = await ref.get();
 
@@ -270,7 +306,7 @@ const query = async job => {
 // 'doc' optional if you want to subscribe to the entire collection.
 //
 // Returns a Promise that resolves to an 'unsubscribe' function.
-const subscribe = ({
+const subscribe = async ({
 	coll, 
 	doc, 
 	callback, 
@@ -280,7 +316,8 @@ const subscribe = ({
 	orderBy, 
 	startAt
 }) => {
-	const ref 				= getSubscribeRef(coll, doc, endAt, limit, orderBy, startAt);
+	const ref = await getSubscribeRef(coll, doc, endAt, limit, orderBy, startAt);
+
 	const unsubscribe = startSubscription(ref, callback, errorCallback);
 
 	return unsubscribe;
@@ -296,10 +333,12 @@ const subscribe = ({
 // Returns a Promise that resolves to an 'unsubscribe' function.
 //
 // Call 'unsubscribe' to stop getting updates/
-const querySubscribe = job => {
+const querySubscribe = async job => {
+
 	const {callback, errorCallback, query} = job;
 
-	const ref 		 		= buildCompoundRef(job);
+	const ref = await buildCompoundRef(job);
+
 	const queryRef 		= buildCompoundQuery(ref, query);
 	const unsubscribe = startSubscription(queryRef, callback, errorCallback);
 
@@ -309,20 +348,28 @@ const querySubscribe = job => {
 // @@@@@@@@ Delete a document @@@@@@@@@
 //
 // Must include 'coll' and 'doc'.
-const deleteDocument = ({coll, doc}) => {
+const deleteDocument = async ({coll, doc}) => {
+
+	const firestore = await init();
+
 	return firestore.collection(coll).doc(doc).delete();
 };
 
 // @@@@@@@@ Delete a field from a document @@@@@@
 //
 // Must include 'coll', 'doc' and 'field'.
-const deleteField = ({coll, doc, field}) => {
+const deleteField = async ({coll, doc, field}) => {
+
+	const firestore = await init();
+
 	return firestore.collection(coll).doc(doc).
-		update({[field]: firebase.firestore.FieldValue.delete()});
+		update({[field]: firestore.FieldValue.delete()});
 };
 
 // Must include a collection of {coll, doc, data} items.
-const deleteItems = items => {
+const deleteItems = async items => {
+
+	const firestore = await init();
 
 	const batch = firestore.batch();
 
@@ -368,6 +415,7 @@ export {
 	enablePersistence,
 	get,
 	getAll,
+	init,
 	query,
 	querySubscribe,
 	saveItems,
