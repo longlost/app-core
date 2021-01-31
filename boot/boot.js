@@ -1,4 +1,10 @@
 
+// Polymer globals. 
+// These settings are recommended to improve performance.
+import {
+  setPassiveTouchGestures, 
+  setRemoveNestedTemplates
+} from '@polymer/polymer/lib/utils/settings.js';
 
 // Pulls in roboto fonts and resolves 
 // a fouc with lazy loaded <paper-input>'s.
@@ -13,6 +19,10 @@ import './sw.js';
 
 // Conditionally load polyfills.
 import './polyfills.js';
+
+
+setPassiveTouchGestures(true);
+setRemoveNestedTemplates(true);
 
 // Create a '<custom-styel></custom-style>' in document head 
 // to persist ShadyCSS @apply mixins until browsers support shadow parts spec.
