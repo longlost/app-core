@@ -2,10 +2,22 @@
 
 // Using CommonJS Modules syntax here as this 
 // must work with node.js as well as webpack.
+const mime = require('mime-types');
 
-const {blobToFile} = require('./lambda.js');
-const mime         = require('mime-types');
 
+// NOTE:
+//      'blobToFile' is NOT currently being imported form lambda.js
+//      because the current version of Firebase Cloud Functions does
+//      NOT yet support ES Modules, even though the Node.js version
+//      is set to v14.X.
+//
+//      This us due to the fact that 'firebase-functions' and 
+//      'firebase-admin' are not yet updated to the new syntax.
+//
+// Convert a blob object to a file object.
+const blobToFile = (blob, name, type) =>
+  new File([blob], name, {type: type ? type : blob.type});
+  
 
 // Accepts a file item object such as created by app-file-system.
 // Returns true if there are no more cloud processes to complete.
