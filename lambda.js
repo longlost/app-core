@@ -2,8 +2,11 @@
 // Partial function application.
 // Function -> Function or Any
 const curry = func => {
+
   const arity   = func.length;
+
   const curried = (...a) => a.length >= arity ? func(...a) : (...b) => curried(...a, ...b);
+  
   return curried;                                      
 };
 
@@ -23,23 +26,29 @@ const curry = func => {
 // Chain multiple pure functions together.
 // Functions -> Function
 const compose = (...funcs) => {
+
   const arity = funcs.length;
+
   if (arity === 0) { return; }
 
   const foundNonFunction = funcs.find(func => typeof func !== 'function');
+
   if (foundNonFunction) { throw new Error('compose only accepts functions as arguments'); }
 
   return (x, ...rest) => {
+
     if (rest.length > 0) { throw new Error('a composed function can only accept one argument'); }
+
     // Work array last to first.
     const index = arity - 1;
 
     if (index === 0) { return funcs[0](x); }
+
     // const run = (f, g, i) => i === 0 ? f(g(x)) : f(run(g, funcs[i - 1], i - 1));
     const run = (f, g, i) => {
-      if (i === 0) {
-        return f(g(x));
-      }
+
+      if (i === 0) { return f(g(x)); }
+
       return f(run(g, funcs[i - 1], i - 1));
     };
 
@@ -52,11 +61,16 @@ const compose = (...funcs) => {
 // arguments as prior invocations.
 // Function -> Any
 const memoize = func => {
+
   if (typeof func !== 'function') { return new TypeError('memoize only accepts a function'); }
+
   const cache = {};
+
   return (...args) => {
+
     const argStr  = JSON.stringify(args);
     cache[argStr] = cache[argStr] || func(...args);
+
     return cache[argStr];
   };
 };
@@ -64,7 +78,9 @@ const memoize = func => {
 // Use trace to debug function pipelines using compose().
 // String, Any -> Any
 const trace = curry((tag, x) => {
+
   console.log(tag, x); // eslint-disable-line no-console
+
   return x;
 });
 
@@ -110,7 +126,9 @@ const rest = curry((start, array)   => array.slice(start));
 // Pure pop implementation.
 // Array -> Array
 const pop = array => {
+
   const [first, ...rest] = array.reverse();
+
   return rest.reverse();
 };
 
@@ -123,7 +141,9 @@ const push = curry((array, element, ...rest) =>
 // Pure shift implementation.
 // Array -> Array
 const shift = array => {
+
   const [first, ...rest] = array;
+
   return rest;
 };
 
@@ -134,12 +154,15 @@ const shift = array => {
 // index: Number
 // Any, Number, Number, Array -> Array
 const splice = curry((insert, remove, index, array) => {
+
   if (typeof index !== 'number') { throw new TypeError('splice index must be a number'); }
   if (!Array.isArray(array))     { throw new TypeError('splice array must be an array'); }
+
   const inserted  = insert || [];
   const removeQty = typeof remove === 'number' ? remove : 0;
   const beginning = array.slice(0, index); 
   const end       = array.slice(index + removeQty);
+
   return [...beginning, ...inserted, ...end];
 });
 
@@ -150,11 +173,13 @@ const removeOne = splice(undefined, 1);
 // Capitalize the first letter in a string.
 // String -> String
 const capitalize = str => {
+
   if (!str) { return str; }
   const capFirst = compose(letters, head,    upperCase);
   const getRest  = compose(letters, rest(1), join(''));
   const first    = capFirst(str);
   const end      = getRest(str);
+
   return `${first}${end}`;
 };
 
@@ -172,6 +197,7 @@ const currency = (num, type = 'USD') =>
 // Calculates taxes and total after taxes.
 // 'taxRate' argument is the tax percentage (ie. 8.25).
 const calcPrice = curry((taxRate, subTot) => {
+
   const taxDecimal   = Number(taxRate) / 100;
   const taxTot       = Number(subTot) * taxDecimal;
   const totalInt     = Number(subTot) * (100 + (taxDecimal * 100));
@@ -179,6 +205,7 @@ const calcPrice = curry((taxRate, subTot) => {
   const total        = currency(totalDecimal);
   const tax          = currency(taxTot);
   const subtotal     = currency(subTot);
+
   return {subtotal, tax, total};
 });
 
@@ -196,19 +223,24 @@ const deepClone = obj => JSON.parse(JSON.stringify(obj));
 // to read a val in a nested object.
 // String, Object -> Any
 const accessByPath = curry((path, obj) => {
+
   const keys = path.split('.');
+
   return keys.reduce((accum, key) => accum[key], obj);
 });
 
 // Scale an input number range to an output number range.
 const scale = curry((inputMin, inputMax, outputMin, outputMax, input) => {  
+
   const percent = (input - inputMin) / (inputMax - inputMin);
   const output  = percent * (outputMax - outputMin) + outputMin;
+
   return output;
 });
 
 // Transfrom an object-like item into a true object.
 const toObj = objLike => {
+
   const obj = {};
   for (const prop in objLike) {
     obj[prop] = objLike[prop];
@@ -240,8 +272,10 @@ const addDecimals = places => (...nums) => {
 
 // Set the expected decimal places to safely
 // subtract two or more numbers.
+//
 // Number -> Function -> Numbers -> Number
 const subtractDecimals = places => (...nums) => {
+
   const multiple = 10 ** places;
 
   const val = nums.reduce((accum, num) => {
@@ -252,6 +286,35 @@ const subtractDecimals = places => (...nums) => {
 
   return val / multiple;
 };
+
+// Transforms a hex string such as '#FFFFFF' to a
+// css rgba function string like 'rgba(255, 255, 255, 1)'.
+//
+// String [, Number] --> String.
+const hexToRGBA = curry((hex, alpha = 1) => {
+
+  const toHexidecimal = (a, b) => `0x${a}${b}`;
+
+  const toCss = (r, g, b) => 
+    `rgba(${Number(r)}, ${Number(g)}, ${Number(b)}, ${Number(alpha)})`;
+
+  // 3 digits
+  if (hex.length === 4) {
+    const r = toHexidecimal(hex[1], hex[1]);
+    const g = toHexidecimal(hex[2], hex[2]);
+    const b = toHexidecimal(hex[3], hex[3]);
+
+    return toCss(r, g, b);
+  } 
+  // 6 digits
+  else if (hex.length === 7) {
+    const r = toHexidecimal(hex[1], hex[2]);
+    const g = toHexidecimal(hex[3], hex[4]);
+    const b = toHexidecimal(hex[5], hex[6]);
+
+    return toCss(r, g, b);
+  }
+});
 
 
 export {
@@ -269,6 +332,7 @@ export {
   flatten, 
   flatMap,
   head,
+  hexToRGBA,
   join,
   letters,
   lowerCase,
