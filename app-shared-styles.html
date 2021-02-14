@@ -94,7 +94,7 @@
     .shared-two-line-truncate {
       line-height:        1.5;
       overflow:           hidden;
-      display:            -webkit-box;
+      text-overflow:      ellipsis;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
     }
@@ -103,7 +103,7 @@
     .shared-three-line-truncate {
       line-height:        1.5;
       overflow:           hidden;
-      display:            -webkit-box;
+      text-overflow:      ellipsis;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
     }
@@ -237,7 +237,8 @@
       --paper-toggle-button-checked-ink-color:    var(--app-primary-color);
     }
     
-
+    
+    paper-button,
     paper-button[pressed] {
       outline: none;
     }
