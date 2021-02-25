@@ -1,6 +1,5 @@
 
 // Polymer globals. 
-// These settings are recommended to improve performance.
 import {
   setPassiveTouchGestures, 
   setRemoveNestedTemplates
@@ -20,7 +19,11 @@ import './sw.js';
 // Conditionally load polyfills.
 import './polyfills.js';
 
+// Setup PWA installability.
+import './install.js';
 
+
+// These settings are recommended by Polymer to improve performance.
 setPassiveTouchGestures(true);
 setRemoveNestedTemplates(true);
 
