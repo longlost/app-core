@@ -39,27 +39,33 @@ export const ElementMixin = superClass => {
 
         // 'clicked' state indicating whether a tap 
         // handler is currently running or not.
-        _clickDebouncerBusy: Boolean
+        _clickDebouncerBusy: Boolean,
+
+        _throttleBusy: Boolean
 
       };
     }
     
 
     constructor() {
+
       super();
 
       // Used to notify parent if lazy loaded.
       this.customElementReady = true;
+
       this.fire('custom-element-ready', {node: this});
     }
 
 
     async connectedCallback() {
+
       super.connectedCallback();
 
       await schedule();
 
       this.customElementConnected = true;
+
       this.fire('custom-element-connected', {node: this});
     }
     
@@ -115,7 +121,9 @@ export const ElementMixin = superClass => {
       // Clean up previous promise.
       if (this._debouncers[label]) {
         const {rejector, timeout} = this._debouncers[label];
+
         window.clearTimeout(timeout);
+
         rejector('debounced');
       }
 
@@ -124,10 +132,12 @@ export const ElementMixin = superClass => {
         const timeout = window.setTimeout(() => {
 
           window.requestAnimationFrame(() => {
+
             delete this._debouncers[label];
 
             resolve();
           });
+
         }, waitTime);
 
         this._debouncers[label] = {timeout, rejector: reject};
@@ -136,6 +146,7 @@ export const ElementMixin = superClass => {
 
 
     async __clickDebouncer(waitTime) {
+
       try {
         await this.debounce('onClickDebounce', waitTime);
         
@@ -147,12 +158,12 @@ export const ElementMixin = superClass => {
     // 'clicked' rejects the promise on every debounce, so consuming function
     // must use try/catch to handle the rejected promises from debouncing.
     // Rejects with 'click debounced' as the error.
-    async clicked(waitTime) {
+    async clicked(waitTime = 500) {
 
       if (this._clickDebouncerBusy) { 
         this.__clickDebouncer(waitTime);
 
-        return Promise.reject('click debounced'); 
+        throw new Error('click debounced'); 
       }
 
       this._clickDebouncerBusy = true;
@@ -166,6 +177,7 @@ export const ElementMixin = superClass => {
     // @param <Object> context HTMLElement parent.
     // @return <Object> HTMLElement.
     select(selector, context = this) {
+
       return context.shadowRoot.querySelector(selector);
     }
 
@@ -173,7 +185,35 @@ export const ElementMixin = superClass => {
     // @param <Object> context HTMLElement parent.
     // @return <Array> HTMLElements.
     selectAll(selector, context = this) {
+
       return Array.from(context.shadowRoot.querySelectorAll(selector));
+    }
+
+
+    async __throttleDebouncer(waitTime) {
+
+      try {
+        await this.debounce('throttle-debounce', waitTime);
+        
+        this._throttleBusy = false;
+      }
+      catch (_) {}
+    }
+
+    // 'throttle' runs the first invocation but throws on 
+    // subsiquent invocations during the 'waitTime'.
+    //
+    // Consuming function must use try/catch to handle the 
+    // thrown 'throttled' errors.
+    throttle(waitTime = 500) {
+
+      this.__throttleDebouncer(waitTime);
+
+      if (this._throttleBusy) {
+        throw new Error('throttled'); 
+      }
+
+      this._throttleBusy = true;
     }
 
   };
