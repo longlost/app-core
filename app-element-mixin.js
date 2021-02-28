@@ -163,7 +163,7 @@ export const ElementMixin = superClass => {
       if (this._clickDebouncerBusy) { 
         this.__clickDebouncer(waitTime);
 
-        throw new Error('click debounced'); 
+        throw 'click debounced'; 
       }
 
       this._clickDebouncerBusy = true;
@@ -210,7 +210,7 @@ export const ElementMixin = superClass => {
       this.__throttleDebouncer(waitTime);
 
       if (this._throttleBusy) {
-        throw new Error('throttled'); 
+        throw 'throttled'; 
       }
 
       this._throttleBusy = true;
