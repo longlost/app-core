@@ -5,19 +5,17 @@
   *
   **/
 
-
-import firebaseReady from '../firebase.js';
+import {httpsCallable, getFunctions} from 'firebase/functions';
+import firebaseReady                 from '../firebase.js';
 
 
 let functions;
 
 const init = async () => {
 
-  const {firebase} = await firebaseReady();
+  const {firebaseApp} = await firebaseReady();
 
-  await import(/* webpackChunkName: 'firebase/functions' */ 'firebase/functions');
-
-  functions = firebase.functions();
+  functions = getFunctions(firebaseApp);
 };
 
 // No try catch, forward error out to main thread,
@@ -29,7 +27,7 @@ export default async job => {
   }
 
   const {name, data = {}} = job;
-  const callable          = functions.httpsCallable(name);
+  const callable          = httpsCallable(functions, name);
 
   const result = await callable(data);
 
