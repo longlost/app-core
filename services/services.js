@@ -45,7 +45,7 @@ import {
 	textStartsWithSearch
 } from './db.js';
 
-import functions from './functions.js';
+import * as cloudFunction from './functions.js';
 
 import {
 	deleteFile,
@@ -56,10 +56,9 @@ import {
 } from './storage.js';
 
 
-// Promises.
-const services = {
+export default {
 	add,
-	cloudFunction: functions,
+	cloudFunction,
 	deleteDocument,
 	deleteField,
 	deleteFile,
@@ -80,4 +79,24 @@ const services = {
 };
 
 
-export default services;
+// export {
+// 	add,
+// 	cloudFunction,
+// 	deleteDocument,
+// 	deleteField,
+// 	deleteFile,
+// 	deleteItems,
+// 	enablePersistence,
+// 	fileUpload,
+// 	get,
+// 	getAll,
+// 	getDownloadUrl,
+// 	getMetadata,
+// 	query,
+// 	querySubscribe,
+// 	saveItems,
+// 	set,
+// 	subscribe,
+// 	textStartsWithSearch,
+// 	updateMetadata
+// };
