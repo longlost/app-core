@@ -1,6 +1,6 @@
 {
   "name": "@longlost/app-core",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A collection of modules that are essential to any Long Lost app.",
   "main": "index.js",
   "scripts": {
@@ -22,9 +22,9 @@
     "@polymer/polymer": "^3.4.1",
     "@ungap/global-this": "^0.4.4",
     "comlink": "^4.3.1",
-    "firebase": "^9.0.0-beta.3",
-    "mime-types": "^2.1.31",
+    "firebase": "^9.0.0-2021720181311",
+    "mime-types": "^2.1.32",
     "scroll-behavior-polyfill": "^2.0.13",
-    "workbox-window": "^6.1.5"
+    "workbox-window": "^6.2.4"
   }
 }

@@ -45,7 +45,7 @@ import {
 	textStartsWithSearch
 } from './db.js';
 
-import * as cloudFunction from './functions.js';
+import cloudFunction from './functions.js';
 
 import {
 	deleteFile,
