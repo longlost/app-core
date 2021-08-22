@@ -15,6 +15,7 @@ import {
   orderBy,
   query as queryColl,
   setDoc,
+  startAfter,
   startAt,
   updateDoc,
   where,
@@ -24,10 +25,24 @@ import {
 import firebaseReady from '../firebase.js';
 
 
+export {
+  collection, 
+  doc, 
+  getDoc, 
+  limit, 
+  onSnapshot, 
+  orderBy, 
+  queryColl, 
+  startAfter, 
+  startAt,
+  where
+};
+
+
 let firestore;
 
 
-const init = async () => {
+export const initDb = async () => {
 
   if (firestore) { return firestore; }
 
@@ -77,11 +92,11 @@ const buildCompoundParams = job => {
 };
 
 
-const buildCompoundQueryParams = job => {
+const buildCompoundConstraints = job => {
 
-  if (Array.isArray(job.query)) {
+  if (Array.isArray(job.constraints)) {
 
-    const params = job.query.reduce((accum, input) => {
+    const constraints = job.constraints.reduce((accum, input) => {
 
       const {comparator, field, operator} = input;
 
@@ -98,19 +113,19 @@ const buildCompoundQueryParams = job => {
       return accum;
     }, []);
 
-    return params;
+    return constraints;
   }
 
-  const {comparator, field, operator} = job.query;
+  const {comparator, field, operator} = job.constraints;
 
-  const params       = [where(field, operator, comparator)];
-  const orderByParam = addOrderBy(job.query.orderBy);
+  const constraints  = [where(field, operator, comparator)];
+  const orderByParam = addOrderBy(job.constraints.orderBy);
 
   if (orderByParam) {
-    params.push(orderByParam);
+    constraints.push(orderByParam);
   }
 
-  return params;
+  return constraints;
 };
 
 // 'subscribe' and 'querySubscribe' helper.
@@ -153,11 +168,11 @@ const startSubscription = (q, cb, onError) => {
 //
 // Each device can have its own state
 // in case user uses app on a shared device.
-const enablePersistence = async () => {
+export const enablePersistence = async () => {
 
   try {
 
-    const db = await init();
+    const db = await initDb();
 
     await enableMultiTabIndexedDbPersistence(db, {synchronizeTabs: true});    
   }
@@ -192,18 +207,18 @@ const enablePersistence = async () => {
 // Note: no multi-dimentional arrays can be stored.
 //
 // Input shape: {coll, data}
-const add = async job => {
+export const add = async job => {
 
-  const db = await init();
+  const db = await initDb();
 
   return addDoc(collection(db, job.coll), job.data);
 };
 
 // Must include 'coll', 'doc' and 'data'.
 // Input shape: {coll, doc, data, merge}
-const set = async job => {
+export const set = async job => {
 
-  const db    = await init();
+  const db    = await initDb();
   const merge = job.merge ?? true;
 
   // 'set' with merge true create a document if one does not already exist
@@ -213,9 +228,9 @@ const set = async job => {
 
 // Must include a collection of {coll, doc, data} items.
 // Input shape: [{coll, doc, data, merge}, ...]
-const saveItems = async items => {
+export const setBatch = async items => {
 
-  const db    = await init();
+  const db    = await initDb();
   const batch = writeBatch(db);
 
   items.forEach(item => {
@@ -238,9 +253,9 @@ const saveItems = async items => {
 //
 // Must include 'coll' and 'doc'.
 // Input shape: {coll, doc}
-const get = async job => {
+export const get = async job => {
 
-  const db      = await init();
+  const db      = await initDb();
   const docData = await getDoc(doc(db, job.coll, job.doc));
 
   if (docData.exists) {
@@ -260,9 +275,9 @@ const get = async job => {
 // Can optionally include 'endAt', 'limit', 'orderBy', 'startAt'.
 //
 // 'orderBy' --> {name, direction}
-const getAll = async job => {
+export const getAll = async job => {
 
-  const db       = await init();
+  const db       = await initDb();
   const ref      = collection(db, job.coll);
   const params   = buildCompoundParams(job);
   const q        = queryColl(ref, ...params); 
@@ -279,19 +294,19 @@ const getAll = async job => {
 
 // @@@@@@@@ Query a collection @@@@@
 //
-// Must include 'coll' and 'query'.
+// Must include 'coll' and 'constraints'.
 //
 // Options: 'endAt', 'limit', 'orderBy', 'startAt'.
 //
-// 'query' is either an Object --> {comparator, field, operator} or 
+// 'constraints' is either an Object --> {comparator, field, operator} or 
 // Array --> [{comparator, field, operator}].
-const query = async job => {
+export const query = async job => {
 
-  const db          = await init();
+  const db          = await initDb();
   const ref         = collection(db, job.coll);
-  const queryParams = buildCompoundQueryParams(job);
+  const constraints = buildCompoundConstraints(job);
   const params      = buildCompoundParams(job);
-  const q           = queryColl(ref, ...queryParams, ...params);  
+  const q           = queryColl(ref, ...constraints, ...params);  
   const snapshot    = await getDocs(q);
 
   const allData = [];
@@ -313,13 +328,13 @@ const query = async job => {
 //
 // Input shape:
 //  {coll, doc, callback, errorCallback, endAt, limit, orderBy, startAt}
-const subscribe = async job => {
+export const subscribe = async job => {
 
   if (job.doc && (job.endAt || job.limit || job.orderBy || job.startAt)) {
     throw new Error('Cannot apply search options to a single document.');
   }
 
-  const db  = await init();
+  const db  = await initDb();
   const ref = collection(db, job.coll);
 
   if (job.doc) {
@@ -338,21 +353,21 @@ const subscribe = async job => {
 
 // @@@@@@@@ Subscribe to a query @@@@@@
 //
-// Must include 'coll' and 'query'.
+// Must include 'coll' and 'constraints'.
 //
-// 'query' is either an Object --> {comparator, field, operator} or 
+// 'constraints' is either an Object --> {comparator, field, operator} or 
 // Array --> [{comparator, field, operator}].
 //
 // Returns a Promise that resolves to an 'unsubscribe' function.
 //
 // Call 'unsubscribe' to stop getting updates/
-const querySubscribe = async job => {
+export const querySubscribe = async job => {
 
-  const db          = await init();
+  const db          = await initDb();
   const ref         = collection(db, job.coll);
-  const queryParams = buildCompoundQueryParams(job);
+  const constraints = buildCompoundConstraints(job);
   const params      = buildCompoundParams(job);
-  const q           = queryColl(ref, ...queryParams, ...params);
+  const q           = queryColl(ref, ...constraints, ...params);
   const unsub       = startSubscription(q, job.callback, job.errorCallback);
 
   return unsub;
@@ -361,9 +376,9 @@ const querySubscribe = async job => {
 // @@@@@@@@ Delete a document @@@@@@@@@
 //
 // Must include 'coll' and 'doc'.
-const deleteDocument = async job => {
+export const deleteDocument = async job => {
 
-  const db = await init();
+  const db = await initDb();
 
   return deleteDoc(doc(db, job.coll, job.doc));
 };
@@ -371,9 +386,9 @@ const deleteDocument = async job => {
 // @@@@@@@@ Delete a field from a document @@@@@@
 //
 // Must include 'coll', 'doc' and 'field'.
-const deleteField = async job => {
+export const deleteField = async job => {
 
-  const db  = await init();
+  const db  = await initDb();
   const ref = doc(db, job.coll, job.doc);
 
   return updateDoc(ref, {[job.field]: deleteDocField()});
@@ -382,9 +397,9 @@ const deleteField = async job => {
 // @@@@@@@@ Batch Delete a set of documents @@@@@@
 //
 // Must include a collection of {coll, doc} items.
-const deleteItems = async items => {
+export const deleteBatch = async items => {
 
-  const db    = await init();
+  const db    = await initDb();
   const batch = writeBatch(db);
 
   items.forEach(item => {
@@ -400,7 +415,7 @@ const deleteItems = async items => {
 // NOT a full-text search solution!
 // 
 // Input shape: {coll, direction, limit, prop, text}
-const textStartsWithSearch = job => {
+export const textStartsWithSearch = job => {
 
   const opts = {
     coll:    job.coll, 
@@ -411,22 +426,4 @@ const textStartsWithSearch = job => {
   };
 
   return getAll(opts);
-};
-
-
-export {
-  add,
-  deleteDocument,
-  deleteField,
-  deleteItems,
-  enablePersistence,
-  get,
-  getAll,
-  init,
-  query,
-  querySubscribe,
-  saveItems,
-  set,
-  subscribe,
-  textStartsWithSearch
 };
