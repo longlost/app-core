@@ -17,6 +17,7 @@
     "connect-history-api-fallback": "^1.5.0",
     "copy-webpack-plugin": "^9.0.0",
     "css-loader": "^5.2.6",
+    "favicons": "^6.2.2",
     "favicons-webpack-plugin": "^5.0.2",
     "file-loader": "^6.2.0",
     "html-loader": "^2.1.2",

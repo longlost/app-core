@@ -238,9 +238,13 @@ module.exports = {
 
     // Create a sitemap.xml file.
     // Automatically update lastmod to date of build.
-    new SitemapPlugin(url, routes, {
-      lastmod:  true, // Use the data of the last build for all routes.
-      skipgzip: true  // Firebase gzips all files.
+    new SitemapPlugin({
+      base:  url, 
+      paths: routes, 
+      options: {
+        lastmod:  true, // Use the data of the last build for all routes.
+        skipgzip: true  // Firebase gzips all files.
+      }
     }),
 
     // Pass a stubbed version of service worker file to dev server.
