@@ -1,102 +1,81 @@
 
 /**
 	*
-	*		Middleware wrapper around Firebase Web platform that lazy-loads 
-	* 	Firebase Cloud Functions and Storage.
+	*		This modules aggregates the Firebase SDK middleware modules.
 	*
-	*		The reason for this is to defer loading large assets
-	* 	that are not required for boot up as well as to have a single
-	* 	update point should the Firebase Api change over time.
+	*		The "Services" module is an abstraction layer to the underlying
+	* 	database, file storage and cloud function API's.
+	* 
+	* 	
+	* 	Exported middleware functions:
+	*
+	* 		add,
+	* 		cloudFunction,
+	* 		deleteBatch,
+	* 		deleteDocument,
+	* 		deleteField,
+	* 		deleteFile,
+	* 		enablePersistence,
+	* 		fileUpload,
+	* 		get,
+	* 		getAll,
+	* 		getDownloadUrl,
+	* 		getMetadata,
+	* 		initDb,
+	* 		initStorage,
+	* 		query,
+	* 		querySubscribe,
+	* 		set,
+	* 		setBatch,
+	* 		subscribe,
+	* 		textStartsWithSearch,
+	* 		updateMetadata
+	* 
+	*
+	* 	
+	* 	Exported firebase functions:
+	* 
+	* 		collection, 
+  *			doc, 
+  *			getDoc, 
+  *			limit, 
+  *			onSnapshot, 
+  *			orderBy, 
+  *			queryColl, 
+  *			startAfter, 
+  *			startAt,
+  *			where
+	* 
 	*
 	*
-	* 	example use:
+	* 	Example use:
 	*
 	*
-	*		import services from '@longlost/app-shell/services/services.js';
-	*
-	*
-	*		const getUserData = async () => {
-	*	  	try {
-	*		  	const data = await services.get({coll: 'users', doc: 'some uid string goes here'});
-	*		  	console.log('user data: ', data);
-	* 				return data;
-	*			}
-	*			catch (error) { console.error('getUserData error: ', error); }
-	*		};
-	*
-	*  	const someUsersData = await getUserData();
+	*			import {get} from '@longlost/app-shell/services/services.js';
+	*	
+	*	
+	*			const getUserData = async () => {
+	* 
+	*		  	try {
+	*	 
+	*			  	const data = await get({coll: 'users', doc: 'clay'});
+	*	 
+	*			  	console.log('user data: ', data);
+	*	 
+	*	 				return data;
+	*				}
+	*				catch (error) { 
+	* 				console.error('getUserData error: ', error); 
+	* 			}
+	*			};
+	*	
+	*	  	const someUsersData = await getUserData();
 	*
 	**/
 
 
-import {
-	add,
-	deleteDocument,
-	deleteField,
-	deleteItems,
-	enablePersistence,
-	get,
-	getAll,
-	query,
-	querySubscribe,
-	saveItems,
-	set,
-	subscribe,
-	textStartsWithSearch
-} from './db.js';
+export * from './db.js';
 
-import cloudFunction from './functions.js';
+export {default as cloudFunction} from './functions.js';
 
-import {
-	deleteFile,
-	fileUpload,
-	getDownloadUrl,
-	getMetadata,
-	updateMetadata
-} from './storage.js';
-
-
-export default {
-	add,
-	cloudFunction,
-	deleteDocument,
-	deleteField,
-	deleteFile,
-	deleteItems,
-	enablePersistence,
-	fileUpload,
-	get,
-	getAll,
-	getDownloadUrl,
-	getMetadata,
-	query,
-	querySubscribe,
-	saveItems,
-	set,
-	subscribe,
-	textStartsWithSearch,
-	updateMetadata
-};
-
-
-// export {
-// 	add,
-// 	cloudFunction,
-// 	deleteDocument,
-// 	deleteField,
-// 	deleteFile,
-// 	deleteItems,
-// 	enablePersistence,
-// 	fileUpload,
-// 	get,
-// 	getAll,
-// 	getDownloadUrl,
-// 	getMetadata,
-// 	query,
-// 	querySubscribe,
-// 	saveItems,
-// 	set,
-// 	subscribe,
-// 	textStartsWithSearch,
-// 	updateMetadata
-// };
+export * from './storage.js';

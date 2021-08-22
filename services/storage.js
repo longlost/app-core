@@ -16,26 +16,27 @@ import firebaseReady from '../firebase.js';
 let fbStorage;
 
 
-const init = async () => {
+export const initStorage = async () => {
 
 	if (fbStorage) { return fbStorage; }
 
 	const {firebaseApp} = await firebaseReady();
-	fbStorage 						= getStorage(firebaseApp);
+
+	fbStorage = getStorage(firebaseApp);
 
 	return fbStorage;
 };
 
 
-const deleteFile = async path => {
+export const deleteFile = async path => {
 
-	const storage = await init();
+	const storage = await initStorage();
 
 	return deleteObject(ref(storage, path));
 };
 
 
-const fileUpload = async ({
+export const fileUpload = async ({
 	controlsCallback,
 	doneCallback,
 	errorCallback, 
@@ -45,7 +46,7 @@ const fileUpload = async ({
 	stateChangedCallback
 }) => {
 
-	const storage 	 = await init();
+	const storage 	 = await initStorage();
 	const storageRef = ref(storage, path);
   const uploadTask = uploadBytesResumable(storage, file, metadata);
 
@@ -95,34 +96,25 @@ const fileUpload = async ({
 };
 
 
-const getDownloadUrl = async path => {
+export const getDownloadUrl = async path => {
 
-	const storage = await init();
+	const storage = await initStorage();
 
 	return getURL(ref(storage, path));
 };
 
 
-const getMetadata = async path => {
+export const getMetadata = async path => {
 
-	const storage = await init();
+	const storage = await initStorage();
 
 	return getMeta(ref(storage, path));
 };
 
 
-const updateMetadata = async (path, metadata) => {
+export const updateMetadata = async (path, metadata) => {
 
-	const storage = await init();
+	const storage = await initStorage();
 
 	return updateMeta(ref(storage, path), metadata);
-};
-
-
-export {
-	deleteFile,
-	fileUpload,
-	getDownloadUrl,
-	getMetadata,
-	updateMetadata
 };
