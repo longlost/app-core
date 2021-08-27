@@ -1,5 +1,7 @@
 
 
+import {shouldEnableDbPersistence} from './settings.js';
+
 import {
   addDoc,
   collection,
@@ -39,17 +41,70 @@ export {
 };
 
 
+// Offline, multi-tab persistence.
+//
+// See app-settings via app-shell.
+//
+// The state is held in local-storage in app-shell and
+// can be changed by user in settings.
+//
+// Each device can have its own state
+// in case user uses app on a shared device.
+let persistenceEnabled = false;
+
+
+const enablePersistence = async db => {
+
+  try {
+
+    if (!persistenceEnabled && shouldEnableDbPersistence) {
+
+      await enableMultiTabIndexedDbPersistence(db, {synchronizeTabs: true});
+
+      persistenceEnabled = true;
+    }
+
+  }
+  catch (error) {
+
+    if (error.code === 'failed-precondition') {
+
+        // Multiple tabs open, persistence can only be enabled
+        // in one tab at a a time.
+        console.warn('firestore persistence failed-precondition');
+    } 
+    else if (error.code === 'unimplemented') {
+
+        // The current browser does not support all of the
+        // features required to enable persistence.
+        console.warn('firestore persistence unimplemented');
+    } 
+    else {
+      throw error;
+    }
+  }
+};
+
+
 let firestore;
 
 
 export const initDb = async () => {
 
-  if (firestore) { return firestore; }
+  if (firestore) { 
+
+    await enablePersistence(firestore);
+
+    return firestore; 
+  }
 
   const {firebaseApp}  = await firebaseReady();
   const {getFirestore} = await import(/* webpackChunkName: 'firebase/firestore' */ 'firebase/firestore');
 
   firestore = getFirestore(firebaseApp);
+
+  
+  await enablePersistence(firestore);
 
   return firestore;
 };
@@ -157,43 +212,6 @@ const startSubscription = (q, cb, onError) => {
     }
 
   }, onError);
-};
-
-// Offline, multi-tab persistence.
-//
-// See app-settings via app-shell.
-//
-// The state is held in local-storage in app-shell and
-// can be changed by user in settings.
-//
-// Each device can have its own state
-// in case user uses app on a shared device.
-export const enablePersistence = async () => {
-
-  try {
-
-    const db = await initDb();
-
-    await enableMultiTabIndexedDbPersistence(db, {synchronizeTabs: true});    
-  }
-  catch (error) {
-
-    if (error.code === 'failed-precondition') {
-
-        // Multiple tabs open, persistence can only be enabled
-        // in one tab at a a time.
-        console.warn('firestore persistence failed-precondition');
-    } 
-    else if (error.code === 'unimplemented') {
-
-        // The current browser does not support all of the
-        // features required to enable persistence.
-        console.warn('firestore persistence unimplemented');
-    } 
-    else {
-      throw error;
-    }
-  }
 };
 
 // @@@@@ add data @@@@
