@@ -99,10 +99,12 @@ export const initDb = async () => {
   }
 
   const {firebaseApp}  = await firebaseReady();
-  const {getFirestore} = await import(/* webpackChunkName: 'firebase/firestore' */ 'firebase/firestore');
+  const {getFirestore} = await import(
+    /* webpackChunkName: 'firebase/firestore' */ 
+    'firebase/firestore'
+  );
 
   firestore = getFirestore(firebaseApp);
-
   
   await enablePersistence(firestore);
 
@@ -192,7 +194,7 @@ const startSubscription = (q, cb, onError) => {
 
   return onSnapshot(q, snapshot => {
 
-    if (snapshot.exists || ('empty' in snapshot && snapshot.empty === false)) {
+    if (snapshot.exists() || ('empty' in snapshot && snapshot.empty === false)) {
 
       if (snapshot.docs) {
         const data = [];
@@ -353,15 +355,15 @@ export const subscribe = async job => {
   }
 
   const db  = await initDb();
-  const ref = collection(db, job.coll);
 
   if (job.doc) {
-    const q     = doc(ref, job.doc);
+    const q     = doc(db, job.coll, job.doc);
     const unsub = startSubscription(q, job.callback, job.errorCallback);
 
     return unsub;
   } 
 
+  const ref    = collection(db, job.coll);
   const params = buildCompoundParams(job);
   const q      = queryColl(ref, ...params);
   const unsub  = startSubscription(q, job.callback, job.errorCallback);

@@ -37,12 +37,12 @@
 
 
     .shared-bottom-divider {
-      border-bottom: 2px solid var(--divider-color);
+      border-bottom: 2px solid var(--app-divider-color);
     }
 
 
     .shared-divider {
-      border-top: 2px solid var(--divider-color);
+      border-top: 2px solid var(--app-divider-color);
     }
 
 
@@ -128,8 +128,8 @@
     .shared-paper-card {
       margin: 16px;
       background-color:          var(--app-background-color);
-      color:                     var(--dark-text-color);
-      --paper-card-header-color: var(--dark-text-color);
+      color:                     var(--app-dark-text);
+      --paper-card-header-color: var(--app-dark-text);
       --paper-card-content: {
         padding: 0px 16px 8px 16px;
       };
@@ -142,24 +142,24 @@
 
 
     .shared-paper-checkbox {
-      --paper-checkbox-unchecked-color:     var(--dark-text-color);
-      --paper-checkbox-unchecked-ink-color: var(--dark-text-color);
+      --paper-checkbox-unchecked-color:     var(--app-dark-text);
+      --paper-checkbox-unchecked-ink-color: var(--app-dark-text);
       --paper-checkbox-checked-color:       var(--app-primary-color);
       --paper-checkbox-checked-ink-color:   var(--app-primary-color);
-      --paper-checkbox-label-color:         var(--secondary-text-color);
+      --paper-checkbox-label-color:         var(--app-secondary-text);
     }
 
 
     .shared-paper-checkbox[checked] {
       font-weight:                  bold;
-      --paper-checkbox-label-color: var(--dark-text-color);
+      --paper-checkbox-label-color: var(--app-dark-text);
     }
 
 
     .shared-paper-dropdown-menu {
       --paper-dropdown-menu-input: {
-        --paper-input-container-color:       var(--secondary-text-color);
-        --paper-input-container-input-color: var(--dark-text-color);
+        --paper-input-container-color:       var(--app-secondary-text);
+        --paper-input-container-input-color: var(--app-dark-text);
         --paper-input-container-focus-color: var(--app-primary-color);
         /*
           Must set this here to counteract a bug 
@@ -181,8 +181,8 @@
 
 
     .shared-paper-input {
-      --paper-input-container-color:       var(--secondary-text-color);
-      --paper-input-container-input-color: var(--dark-text-color);
+      --paper-input-container-color:       var(--app-secondary-text);
+      --paper-input-container-input-color: var(--app-dark-text);
       --paper-input-container-focus-color: var(--app-primary-color);
       /*
         Must set this here to counteract a bug 
@@ -209,7 +209,7 @@
 
     .shared-paper-listbox {
       --paper-listbox-background-color: var(--app-background-color);
-      --paper-listbox-color:            var(--dark-text-color);
+      --paper-listbox-color:            var(--app-dark-text);
     }
 
 
@@ -217,15 +217,15 @@
       --paper-radio-group-item-padding:         0px;
       --paper-radio-button-checked-color:       var(--app-primary-color);
       --paper-radio-button-checked-ink-color:   var(--app-primary-color);
-      --paper-radio-button-unchecked-color:     var(--dark-text-color);
-      --paper-radio-button-unchecked-ink-color: var(--dark-text-color);
-      --paper-radio-button-label-color:         var(--dark-text-color);
+      --paper-radio-button-unchecked-color:     var(--app-dark-text);
+      --paper-radio-button-unchecked-ink-color: var(--app-dark-text);
+      --paper-radio-button-label-color:         var(--app-dark-text);
     }
 
 
     .shared-paper-slider {
       --paper-slider-active-color:    var(--app-primary-color);
-      --paper-slider-secondary-color: var(--app-accent-color);
+      --paper-slider-secondary-color: var(--app-secondary-color);
       --paper-slider-knob-color:      var(--app-primary-color);
       --paper-slider-pin-color:       var(--app-primary-color);
     }
