@@ -1,6 +1,6 @@
 
 
-import {shouldEnableDbPersistence} from './settings.js';
+import {getEnablePersistence} from './settings.js';
 
 import {
   addDoc,
@@ -57,7 +57,7 @@ const enablePersistence = async db => {
 
   try {
 
-    if (!persistenceEnabled && shouldEnableDbPersistence) {
+    if (!persistenceEnabled && getEnablePersistence()) {
 
       await enableMultiTabIndexedDbPersistence(db, {synchronizeTabs: true});
 

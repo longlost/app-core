@@ -1,6 +1,9 @@
 
 // For use by db.js only.
-export let shouldEnableDbPersistence = false;
+let shouldEnableDbPersistence = false;
+
+
+export const getEnablePersistence = () => shouldEnableDbPersistence;
 
 // Calling this function will trigger the db to have offline
 // persistence setup on the next db invocation.
