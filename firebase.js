@@ -13,6 +13,7 @@ const ready = new Promise(resolve => {
   readyResolver = resolve;
 });
 
+
 // This function allows for tree-shaking plus runtime loading to 
 // reduce startup costs and is provided to 'app-shell/auth/auth.js'.
 const loadAuth = async () => {
@@ -25,9 +26,8 @@ const loadAuth = async () => {
     TwitterAuthProvider,
     browserLocalPersistence,
     browserSessionPersistence,
-    getAuth, 
+    initializeAuth,
     onAuthStateChanged,
-    setPersistence,
     signInWithCredential,
     signOut,
     useDeviceLanguage
@@ -41,9 +41,8 @@ const loadAuth = async () => {
     TwitterAuthProvider,
     browserLocalPersistence,
     browserSessionPersistence,
-    getAuth,
+    initializeAuth,
     onAuthStateChanged,
-    setPersistence,
     signInWithCredential,
     signOut,
     useDeviceLanguage
