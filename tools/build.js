@@ -26,17 +26,14 @@ const WebpackBuildNotifierPlugin = require(toolsPath('webpack-build-notifier'));
 
 // App specific, from src/config.js.
 const {
-  alt,
   background_color,
   cacheId,
   description,
   developerName,
   developerURL,
   display,
-  image,
   name,
   routes,
-  siteVerification,
   short_name,
   theme_color,
   title,
@@ -67,11 +64,13 @@ const resolve = {
   descriptionFiles: ['package.json']
 };
 
+
 const resolveLoader = {
 
   // An array of directory names to be resolved to the current directory.
   modules: [path.resolve('tools/node_modules')]
 };
+
 
 const optimization = {
   minimizer: [
@@ -83,7 +82,34 @@ const optimization = {
         }
       },
       extractComments: false
-    })      
+    }),
+
+    new ImageMinimizerPlugin({
+      minimizer: {
+        implementation: ImageMinimizerPlugin.imageminMinify,
+        options: {
+          plugins: [
+
+            // optimizationLevel determines how much processing resources to use
+            // for reducing file size. 
+            // 3 takes the longest but may lead to smaller file sizes.
+            ['imagemin-gifsicle', {optimizationLevel: 3}], // optimizationLevel: 1-3, default 1.
+            ['imagemin-mozjpeg',  {quality: 90}],          // quality: 0-100, default 75.
+            ['imagemin-optipng'],
+            ['imagemin-svgo']
+          ]
+        }        
+      },
+      generator: [{
+
+        // You can apply generator using `?as=webp`, ie. "./file.jpg?as=webp".
+        preset: 'webp',
+        implementation: ImageMinimizerPlugin.imageminGenerate,
+        options: {
+          plugins: [['imagemin-webp', {quality: 90}]] // quality: 0-100, default 75.
+        }
+      }]
+    })
   ],
   runtimeChunk: true,
 
@@ -98,6 +124,7 @@ const optimization = {
   }
 };
 
+
 const wasmLoader = { 
   test:    /\.wasm$/,
   type:   'javascript/auto',
@@ -107,6 +134,7 @@ const wasmLoader = {
   }        
 };
 
+
 const htmlLoader = {
   test: /\.(html)$/,
   loader: 'html-loader',
@@ -115,10 +143,12 @@ const htmlLoader = {
   }
 };
 
+
 const workerLoader = {
   test: /worker\.js$/,
   loader: 'worker-loader'
 };
+
 
 const cssLoader = {
   test: /\.css$/,
@@ -133,6 +163,7 @@ const fileLoader = {
   test: /\.(woff|woff2|eot|ttf)$/, 
   loader: 'file-loader' 
 };
+
 
 const responsiveLoader = {
   test: /\.(jpe?g|png|webp)$/i,
@@ -151,6 +182,7 @@ const responsiveLoader = {
     sizes:           [300, 600, 900, 1200, 1500]
   }
 };
+
 
 const htmlMinifierLoader = {
   test:    /\.js$/,
@@ -284,13 +316,7 @@ module.exports = {
       // precached files even after the refresh prompt after a new deployment. 
       // Exposes the 'webpack' variable to index.ejs
       templateParameters: compilation => ({
-        alt,
-        description,
-        image,
-        name,
-        siteVerification,
-        title,
-        url,
+        ...webpackConfig,
         webpack: compilation.getStats().toJson()
       })
     }),
@@ -378,34 +404,6 @@ module.exports = {
         start_url:   '/',
         theme_color,
         version // Your application's version string. `string`
-      }
-    }),
-
-    new ImageMinimizerPlugin({
-      minimizerOptions: {
-        plugins: [
-
-          // optimizationLevel determines how much processing resources to use
-          // for reducing file size. 
-          // 3 takes the longest but may lead to smaller file sizes.
-          ['imagemin-gifsicle', {optimizationLevel: 3}], // optimizationLevel: 1-3, default 1.
-          ['imagemin-mozjpeg',  {quality: 90}],          // quality: 0-100, default 75.
-          ['imagemin-optipng'],
-          ['imagemin-svgo']
-        ]
-      }
-    }),
-
-    // Add webp alternatives to jpeg and png originals.
-    new ImageMinimizerPlugin({
-      deleteOriginalAssets: false,
-      filename: '[path][name].webp',
-      exclude:  [/\/node_modules/, /\/src/],
-
-      include:  /\/images/, // Not working.
-
-      minimizerOptions: {
-        plugins: [['imagemin-webp', {quality: 90}]] // quality: 0-100, default 75.
       }
     }),
 

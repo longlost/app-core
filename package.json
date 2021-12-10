@@ -22,7 +22,7 @@
     "@polymer/polymer": "^3.4.1",
     "@ungap/global-this": "^0.4.4",
     "comlink": "^4.3.1",
-    "firebase": "^9.6.0",
+    "firebase": "^9.6.1",
     "mime-types": "^2.1.34",
     "scroll-behavior-polyfill": "^2.0.13",
     "workbox-window": "^6.4.2"
