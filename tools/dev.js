@@ -17,17 +17,6 @@ const HtmlWebpackPlugin    = require(toolsPath('html-webpack-plugin'));
 const BrowserSyncPlugin    = require(toolsPath('browser-sync-webpack-plugin'));
 
 
-// App specific, from src/config.js.
-const {
-  alt,
-  description,
-  image,
-  name,
-  siteVerification,
-  title,
-  url
-} = webpackConfig;
-
 
 module.exports = {
   mode: 'development',
@@ -114,12 +103,14 @@ module.exports = {
   // Enable the Webpack dev server which will build, serve, and reload our
   // project on changes.
   devServer: {
-    host:               '0.0.0.0', 
+    historyApiFallback: true,
+    host:              '0.0.0.0', 
     port:               3100,
-    contentBase:        './dist',
-    compress:           true,
-    historyApiFallback: true
+    static: {
+      directory: './dist',
+    }
   },
+
   plugins: [
 
     new webpack.ProgressPlugin(),
@@ -166,13 +157,7 @@ module.exports = {
       // precached files even after the refresh prompt after a new deployment. 
       // Exposes the 'webpack' variable to index.ejs
       templateParameters: compilation => ({
-        alt,
-        description,
-        image,
-        name,
-        siteVerification,
-        title,
-        url,
+        ...webpackConfig,
         webpack: compilation.getStats().toJson()
       })
     }),
