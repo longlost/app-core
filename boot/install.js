@@ -55,11 +55,11 @@ window.addEventListener('appinstalled',        appInstalledHandler);
 // as a "Trusted Web Activity" from an Android app.
 const getPWADisplayMode = () => {
 
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-
   if (document.referrer.startsWith('android-app://')) {
     return 'twa'; // Trusted Web Activity.
   }
+
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 
   if (navigator.standalone || isStandalone) {
     return 'standalone'; // Installed to homescreen.

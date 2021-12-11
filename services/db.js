@@ -194,7 +194,7 @@ const startSubscription = (q, cb, onError) => {
 
   return onSnapshot(q, snapshot => {
 
-    if (snapshot.exists() || ('empty' in snapshot && snapshot.empty === false)) {
+    if (snapshot.exists || ('empty' in snapshot && snapshot.empty === false)) {
 
       if (snapshot.docs) {
         const data = [];
