@@ -26,10 +26,15 @@ const loadAuth = async () => {
     TwitterAuthProvider,
     browserLocalPersistence,
     browserSessionPersistence,
+    deleteUser,
     initializeAuth,
     onAuthStateChanged,
+    sendEmailVerification,
     signInWithCredential,
     signOut,
+    updateEmail,
+    updatePassword,
+    updateProfile,
     useDeviceLanguage
   } = await import(/* webpackChunkName: 'firebase/auth' */ 'firebase/auth');
 
@@ -41,10 +46,15 @@ const loadAuth = async () => {
     TwitterAuthProvider,
     browserLocalPersistence,
     browserSessionPersistence,
+    deleteUser,
     initializeAuth,
     onAuthStateChanged,
+    sendEmailVerification,
     signInWithCredential,
     signOut,
+    updateEmail,
+    updatePassword,
+    updateProfile,
     useDeviceLanguage
   };
 };
