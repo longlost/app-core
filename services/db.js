@@ -4,6 +4,7 @@ import {getEnablePersistence} from './settings.js';
 
 import {
   addDoc,
+  clearIndexedDbPersistence,
   collection,
   deleteDoc,
   deleteField as deleteDocField,
@@ -19,6 +20,7 @@ import {
   setDoc,
   startAfter,
   startAt,
+  terminate,
   updateDoc,
   where,
   writeBatch
@@ -91,24 +93,30 @@ let firestore;
 
 export const initDb = async () => {
 
-  if (firestore) { 
+  if (!firestore) { 
 
-    await enablePersistence(firestore);
+    const {firebaseApp}  = await firebaseReady();
+    const {getFirestore} = await import(
+      /* webpackChunkName: 'firebase/firestore' */ 
+      'firebase/firestore'
+    );
 
-    return firestore; 
+    firestore = getFirestore(firebaseApp);
   }
-
-  const {firebaseApp}  = await firebaseReady();
-  const {getFirestore} = await import(
-    /* webpackChunkName: 'firebase/firestore' */ 
-    'firebase/firestore'
-  );
-
-  firestore = getFirestore(firebaseApp);
   
   await enablePersistence(firestore);
 
   return firestore;
+};
+
+
+export const shutdownDb = async () => {
+
+  if (!firestore) { return; }
+
+  // Shutdown and remove cached user data from device.
+  await terminate(firestore);
+  return clearIndexedDbPersistence(firestore);
 };
 
 
