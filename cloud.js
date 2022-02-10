@@ -1,7 +1,8 @@
 'use strict';
 
-const functions = require('firebase-functions');
-const admin     = require('firebase-admin'); // Access Storage and Firestore.
+const functions   = require('firebase-functions');
+const admin       = require('firebase-admin');
+const cloudDelete = require('./cloud-delete.js');
 
 // Common app cloud functions.
 
@@ -56,12 +57,19 @@ exports.createUser = functions.auth.user().onCreate(async user => {
 
 
 // Remove user info from db when user account is deleted.
-exports.deleteUser = functions.auth.user().onDelete(async user => {
+exports.deleteUser = functions.
+  runWith({
+    timeoutSeconds: 540,
+    memory:        '2GB'
+  }).
+  auth.user().onDelete(async user => {
   
-  await admin.firestore().collection('users').doc(user.uid).delete(); 
+    const path = `users/${user.uid}`;
 
-  return null;  
-});
+    await cloudDelete.recursiveDelete(path); 
+
+    return null;  
+  });
 
 
 const imageProcessingDone = item => {
