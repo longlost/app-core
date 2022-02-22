@@ -1,6 +1,6 @@
 {
   "name": "@longlost/app-core",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "description": "A collection of modules that are essential to any Long Lost app.",
   "main": "index.js",
   "scripts": {
