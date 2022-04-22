@@ -48,7 +48,7 @@ export const fileUpload = async ({
 
 	const storage 	 = await initStorage();
 	const storageRef = ref(storage, path);
-  const uploadTask = uploadBytesResumable(storage, file, metadata);
+  const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
   if (controlsCallback) {
   	const {cancel, pause, resume} = uploadTask;
