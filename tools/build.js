@@ -214,6 +214,11 @@ const htmlMinifierLoader = {
 
 module.exports = {
   mode: 'production',
+
+  // Better debugging info for vague errors.
+  stats: { 
+    children: true 
+  },
   entry: [
     toolsPath('@webcomponents/shadycss/entrypoints/custom-style-interface.js'),
     path.resolve('src/index.js')
@@ -403,7 +408,24 @@ module.exports = {
         orientation: 'any', // MUST be set to 'any' to allow Chrome to rotate screen.
         start_url:   '/',
         theme_color,
-        version // Your application's version string. `string`
+        version, // Your application's version string. `string`
+
+        // Platform icons that are set to false have webapp manifest icon support.
+        icons: {
+
+          // 'android' MUST be set to true in order to create a manifest.json. 
+          android: true,  // Android homescreen icon.
+
+          // Apple options set to 'false' since Safari supports manifest.json.
+          appleIcon:    false, // Apple touch icons.
+          appleStartup: false, // Apple startup images.
+
+          favicons: true,  // Create regular favicons.
+
+          // The following platforms/browsers are not targeted for full support.
+          windows: false, // Windows 8 tile icons.
+          yandex:  false  // Yandex browser icon.
+        }
       }
     }),
 
