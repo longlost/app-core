@@ -20,6 +20,11 @@ const BrowserSyncPlugin    = require(toolsPath('browser-sync-webpack-plugin'));
 
 module.exports = {
   mode: 'development',
+
+  // Better debugging info for vague errors.
+  stats: { 
+    children: true 
+  },
   entry: [ 
     toolsPath('@webcomponents/shadycss/entrypoints/custom-style-interface.js'),
     path.resolve('src/index.js')

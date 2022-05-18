@@ -16,9 +16,6 @@ import '@polymer/paper-styles/typography.js';
 //      Webpack does NOT like that name, ignores the file.
 import './sw.js';
 
-// Conditionally load polyfills.
-import './polyfills.js';
-
 // Setup PWA installability.
 import './install.js';
 
