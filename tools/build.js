@@ -152,10 +152,19 @@ const workerLoader = {
 
 const cssLoader = {
   test: /\.css$/,
-  loader: 'css-loader',
-  options: {
-    import: false // Resolves an issue with 'firebaseui' css file.
-  }
+  use: [
+
+    // Prepares css files for use with Polymer elements. (ie <style include="mycss">).
+    'polymer-css-loader', 
+    'extract-loader', // Required preprocessing for 'polymer-css-loader'. 
+    {
+      loader: 'css-loader',
+      options: {
+        esModule: false, // Module syntax does not work as input to 'extract-loader'.
+        import:   false  // Resolves an issue with 'firebaseui' css file.
+      }
+    }
+  ]
 };
 
 // Specifically for 'typeface-' self hosted font-family node_modules.
