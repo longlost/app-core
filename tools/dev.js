@@ -65,10 +65,18 @@ module.exports = {
       },
       {
         test: /\.(html)$/,
-        loader: 'html-loader',
-        options: {
-          esModule: true
-        }
+        use: [
+
+          // Prepares html files for use with Polymer elements. (ie html`<div>Hi</div>`).
+          'polymer-html-loader',
+
+          // Required preprocessing for 'polymer-html-loader'.
+          // Transforms the output webpack Module from 'html-loader' 
+          // back into a string from the original source file content,
+          // so it can be processed further.
+          'extract-loader', 
+          'html-loader'
+        ]
       },
       {
         test: /worker\.js$/,
