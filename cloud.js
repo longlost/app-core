@@ -29,6 +29,7 @@ exports.createUser = functions.auth.user().onCreate(async user => {
   const keys = Object.keys(userRecord);
 
   const userData = keys.reduce((accum, key) => {
+    
     const val = userRecord[key];
 
     // Firestore does not allow undefined values.
@@ -73,6 +74,7 @@ exports.deleteUser = functions.
 
 
 const imageProcessingDone = item => {
+
   const {optimized, optimizedError, thumbnail, thumbnailError} = item;
   const optimizedDone = Boolean(optimized || optimizedError);
   const thumbnailDone = Boolean(optimized || optimizedError);
@@ -83,60 +85,75 @@ const imageProcessingDone = item => {
 // Wait for image to finish being processed, then 
 // save the updates to the user profile data.
 const manageProfilePhoto = (item, type, ref, userId) => {
+
   if (!item || imageProcessingDone(item)) { return; }
 
   const {coll, doc, uid} = item;
 
   return new Promise(async (resolve, reject) => {
 
-    // Get live updates on the photo item being processed.
-    // Subscribe to the db location where photo is being saved.
-    const unsubscribe = await admin.firestore().collection(coll).doc(doc).
-      onSnapshot(async snap => {
+    try {
 
-        // Bail if the item has been deleted before processing is done.
-        if (!snap.exists) { 
-          unsubscribe();
-          resolve();
-          return;
-        }
+      // Get live updates on the photo item being processed.
+      // Subscribe to the db location where photo is being saved.
+      const unsubscribe = await admin.firestore().collection(coll).doc(doc).
+        onSnapshot(async snap => {
 
-        const data = snap.data();
+          try {
 
-        // Skip partially processed snapshots.
-        if (!imageProcessingDone(data)) { return; }
+            // Bail if the item has been deleted before processing is done.
+            if (!snap.exists) { 
+              unsubscribe();
+              resolve();
+              return;
+            }
 
-        // Double check the 'users/{userId}' data to make sure
-        // that the user hasn't changed the photo again.
-        const doubleCheckData = await admin.firestore().collection('users').doc(userId).get();
+            const data = snap.data();
 
-        // Test 'uid' against the returned 'data[type].uid'.
-        // Unsubscribe and resolve the promise if they are not equal.
-        if (doubleCheckData[type].uid !== uid) {
-          unsubscribe();
-          resolve();
-          return;
-        }
+            // Skip partially processed snapshots.
+            if (!imageProcessingDone(data)) { return; }
 
-        unsubscribe();
+            // Double check the 'users/{userId}' data to make sure
+            // that the user hasn't changed the photo again.
+            const doubleCheckData = await admin.firestore().collection('users').doc(userId).get();
 
-        const {optimized, thumbnail} = data;
-        const photoURL = thumbnail || optimized;
+            // Test 'uid' against the returned 'data[type].uid'.
+            // Unsubscribe and resolve the promise if they are not equal.
+            if (doubleCheckData[type].uid !== uid) {
+              unsubscribe();
+              resolve();
+              return;
+            }
 
-        // Update Firestore 'users/{userId}' ref and if 
-        // its the 'avatar', update Auth User photoURL field.
-        const userPhotoURLPromise = type === 'avatar' ? 
-                                      admin.auth().updateUser(userId, {photoURL}) :
-                                      Promise.resolve();
+            unsubscribe();
 
-        await Promise.all([
-          ref.set({[type]: data}, {merge: true}),
-          userPhotoURLPromise
-        ]);
+            const {optimized, thumbnail} = data;
+            const photoURL = thumbnail || optimized;
 
-        resolve();
-        
-      }, reject);
+            // Update Firestore 'users/{userId}' ref and if 
+            // its the 'avatar', update Auth User photoURL field.
+            const userPhotoURLPromise = type === 'avatar' ? 
+                                          admin.auth().updateUser(userId, {photoURL}) :
+                                          Promise.resolve();
+
+            await Promise.all([
+              ref.set({[type]: data}, {merge: true}),
+              userPhotoURLPromise
+            ]);
+
+            resolve();
+          }
+          catch (error) {
+
+            reject(error);
+          }
+          
+        }, reject);
+    }
+    catch (error) {
+
+      reject(error);
+    }
   });  
 };
 
@@ -158,19 +175,29 @@ exports.updateProfilePhotos = functions.
   document('users/{userId}').
   onUpdate(async (change, context) => {
 
-    const data = change.after.data();
-    const ref  = change.after.ref;
+    try {
 
-    const {avatar, background} = data;
-    const {userId}             = context;
+      const data = change.after.data();
+      const ref  = change.after.ref;
 
-    // No profile photo changes to manage, so bail.
-    if (!avatar && !background) { return null; }
+      const {avatar, background} = data;
+      const {userId}             = context.params;
 
-    await Promise.all([
-      manageProfilePhoto(avatar,     'avatar',     ref, userId),
-      manageProfilePhoto(background, 'background', ref, userId)
-    ]);
+      if (!userId) { throw new Error('User ID unavailable.'); }
 
-    return null;
+      // No profile photo changes to manage, so bail.
+      if (!avatar && !background) { return null; }
+
+      await Promise.all([
+        manageProfilePhoto(avatar,     'avatar',     ref, userId),
+        manageProfilePhoto(background, 'background', ref, userId)
+      ]);
+
+      return null;
+
+    }
+    catch (error) {
+
+      throw error;
+    }
   });
