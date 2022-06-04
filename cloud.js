@@ -115,11 +115,13 @@ const manageProfilePhoto = (item, type, ref, userId) => {
 
             // Double check the 'users/{userId}' data to make sure
             // that the user hasn't changed the photo again.
-            const doubleCheckData = await admin.firestore().collection('users').doc(userId).get();
+            const doubleCheckDoc = await admin.firestore().collection('users').doc(userId).get();
+
+            const doubleCheckData = doubleCheckDoc.exists ? doubleCheckDoc.data() : undefined;
 
             // Test 'uid' against the returned 'data[type].uid'.
             // Unsubscribe and resolve the promise if they are not equal.
-            if (doubleCheckData[type].uid !== uid) {
+            if (doubleCheckData && doubleCheckData[type].uid !== uid) {
               unsubscribe();
               resolve();
               return;
