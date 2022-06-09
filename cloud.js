@@ -169,6 +169,9 @@ const manageProfilePhoto = (item, type, ref, userId) => {
 //
 // This also makes for a more reliable mechanism since the client can
 // go offline or be refreshed at any time during processing. 
+//
+//    See 'account-photo-picker.js' in the '@longlost/app-shell'
+//    package for more.
 exports.updateProfilePhotos = functions.
   runWith({
     timeoutSeconds: 300, // Match cloud image processing timeout of 5 minutes. (default 60 sec).
@@ -186,6 +189,11 @@ exports.updateProfilePhotos = functions.
       const {userId}             = context.params;
 
       if (!userId) { throw new Error('User ID unavailable.'); }
+
+      // User has removed their profile avatar photo.
+      if (avatar === null) {
+        await admin.auth().updateUser(userId, {photoURL: null});
+      }
 
       // No profile photo changes to manage, so bail.
       if (!avatar && !background) { return null; }
