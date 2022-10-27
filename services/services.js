@@ -37,6 +37,7 @@
 	* 
 	* 		collection, 
   *			doc, 
+  * 		endAt,
   *			getDoc, 
   *			limit, 
   *			onSnapshot, 

@@ -31,7 +31,8 @@ import firebaseReady from '../firebase.js';
 
 export {
   collection, 
-  doc, 
+  doc,
+  endAt,
   getDoc, 
   limit, 
   onSnapshot, 
